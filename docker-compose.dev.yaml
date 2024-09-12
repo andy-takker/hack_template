@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=hack_template
+      - POSTGRES_PASSWORD=hack_template
+      - POSTGRES_DB=hack_template
+    ports:
+      - 5432:5432
