@@ -4,15 +4,15 @@ PYTHON_VERSION = 3.12
 
 
 test-ci: ##@Test Run tests with pytest and coverage in CI
-	.venv/bin/pytest ./$(TEST_FOLDER_NAME) --junitxml=./junit.xml --cov=./$(PROJECT_NAME) --cov-report=xml
+	pytest ./$(TEST_FOLDER_NAME) --junitxml=./junit.xml --cov=./$(PROJECT_NAME) --cov-report=xml
 
 lint-ci: ruff mypy ##@Linting Run all linters in CI
 
 ruff: ##@Linting Run ruff
-	.venv/bin/ruff check ./$(PROJECT_NAME)
+	ruff check ./$(PROJECT_NAME)
 
 mypy: ##@Linting Run mypy
-	.venv/bin/mypy --config-file ./pyproject.toml ./$(PROJECT_NAME)
+	mypy --config-file ./pyproject.toml ./$(PROJECT_NAME) --enable-incomplete-feature=NewGenericSyntax
 
 develop: clean_dev ##@Develop Create virtualenv
 	python$(PYTHON_VERSION) -m venv .venv
@@ -20,6 +20,11 @@ develop: clean_dev ##@Develop Create virtualenv
 	.venv/bin/poetry config virtualenvs.create false
 	.venv/bin/poetry install
 	.venv/bin/pre-commit install
+
+develop-ci: ##@Develop Create virtualenv for CI
+	python -m pip install -U pip poetry
+	poetry config virtualenvs.create false
+	poetry install --no-root
 
 local: ##@Develop Run dev containers for test
 	docker compose -f docker-compose.dev.yaml up --force-recreate --renew-anon-volumes --build
