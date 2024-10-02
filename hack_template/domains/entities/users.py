@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import NewType
 from uuid import UUID
@@ -19,3 +20,15 @@ class CreateUser:
     email: str | None
     telegram_id: int | None
     password: str
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class UserPaginationFilter:
+    limit: int
+    offset: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class UserPagination:
+    items: Sequence[User]
+    total: int

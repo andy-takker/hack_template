@@ -4,11 +4,11 @@ from dishka import AnyOf, BaseScope, Provider, Scope, provide
 from hasql.asyncsqlalchemy import PoolManager
 
 from hack_template.adapters.database.config import DatabaseConfig
-from hack_template.adapters.database.storages.users import PGUserStorage
+from hack_template.adapters.database.storages.user import PGUserStorage
 from hack_template.adapters.database.uow import SqlalchemyUow
 from hack_template.adapters.database.utils import create_pool
+from hack_template.domains.interfaces.storages.user import IUserStorage
 from hack_template.domains.uow import AbstractUow
-from hack_template.domains.users.storage import IUserStorage
 
 
 class DatabaseProvider(Provider):

@@ -4,10 +4,14 @@ from sqlalchemy import ForeignKey, Index, Integer, String, text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from hack_template.adapters.database.base import Base, IdentifableMixin
+from hack_template.adapters.database.base import (
+    Base,
+    IdentifableMixin,
+    TimestampedMixin,
+)
 
 
-class UserTable(IdentifableMixin, Base):
+class UserTable(IdentifableMixin, Base, TimestampedMixin):
     __tablename__ = "users"
     __table_args__ = (
         Index(

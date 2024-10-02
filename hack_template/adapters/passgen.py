@@ -1,12 +1,12 @@
 import hashlib
 
-from hack_template.domains.interfaces.passgen import IPassgen
+from hack_template.domains.interfaces.adapters.passgen import IPassgen
 
 
 class Passgen(IPassgen):
     __secret: bytes
 
-    def __init__(self, secret: str) -> None:
+    def __init__(self, *, secret: str) -> None:
         self.__secret = secret.encode()
 
     async def hash_password(self, *, password: str) -> str:

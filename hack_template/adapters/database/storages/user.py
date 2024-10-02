@@ -1,8 +1,9 @@
 import uuid
+from collections.abc import Sequence
 from typing import NoReturn
 from uuid import UUID
 
-from sqlalchemy import CursorResult, insert, select
+from sqlalchemy import CursorResult, func, insert, select
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from hack_template.adapters.database.tables import UserTable
@@ -11,8 +12,8 @@ from hack_template.application.common.exceptions import (
     DatabaseStorageError,
     DuplicateUsernameError,
 )
-from hack_template.domains.entities.users import CreateUser, User
-from hack_template.domains.users.storage import IUserStorage
+from hack_template.domains.entities.users import CreateUser, User, UserPaginationFilter
+from hack_template.domains.interfaces.storages.user import IUserStorage
 
 
 class PGUserStorage(IUserStorage):
@@ -58,6 +59,30 @@ class PGUserStorage(IUserStorage):
             email=user["email"],
             telegram_id=user["telegram_id"],
         )
+
+    async def fetch_users(self, *, filter: UserPaginationFilter) -> Sequence[User]:
+        query = (
+            select(UserTable)
+            .limit(filter.limit)
+            .offset(filter.offset)
+            .order_by(UserTable.created_at)
+        )
+        result = await self.__uow.connection.execute(query)
+        users = result.mappings().all()
+        return [
+            User(
+                id=user["id"],
+                username=user["username"],
+                email=user["email"],
+                telegram_id=user["telegram_id"],
+            )
+            for user in users
+        ]
+
+    async def count_users(self, *, filter: UserPaginationFilter) -> int:
+        query = select(func.count()).select_from(UserTable)
+        result = await self.__uow.connection.execute(query)
+        return result.scalar() or 0
 
     def _raise_error(self, e: DBAPIError) -> NoReturn:
         constraint = e.__cause__.__cause__.constraint_name  # type: ignore[union-attr]

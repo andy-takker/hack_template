@@ -2,7 +2,7 @@ from dishka import AnyOf, BaseScope, Provider, Scope, provide
 
 from hack_template.adapters.passgen import Passgen
 from hack_template.application.config import SecretConfig
-from hack_template.domains.interfaces.passgen import IPassgen
+from hack_template.domains.interfaces.adapters.passgen import IPassgen
 
 
 class AdapterProvider(Provider):

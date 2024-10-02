@@ -1,14 +1,23 @@
 from http import HTTPStatus
+from typing import Annotated
 from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.litestar import inject
 from litestar import Controller, get, post
+from litestar.params import Parameter
 
-from hack_template.domains.entities.users import CreateUser, User, UserId
+from hack_template.domains.entities.users import (
+    CreateUser,
+    User,
+    UserId,
+    UserPagination,
+    UserPaginationFilter,
+)
 from hack_template.domains.uow import AbstractUow
-from hack_template.domains.use_cases.fetch_user_by_id import FetchUserByID
-from hack_template.domains.use_cases.register_user import RegisterUser
+from hack_template.domains.use_cases.handlers.register_user import RegisterUser
+from hack_template.domains.use_cases.queries.fetch_user_by_id import FetchUserByID
+from hack_template.domains.use_cases.queries.fetch_user_list import FetchUserList
 from hack_template.presentors.rest.routers.api.v1.users import urls
 from hack_template.presentors.rest.routers.api.v1.users.schemas import RegisterUserModel
 
@@ -55,3 +64,22 @@ class UsersController(Controller):
                 password=data.password,
             )
             return await register_user.execute(input_dto=create_user)
+
+    @get(
+        operation_id="fetch_user_list",
+        name="users:list",
+        summary="Fetch user list",
+        path=urls.USER_LIST,
+        status_code=HTTPStatus.OK,
+    )
+    async def fetch_user_list(
+        self,
+        uow: FromDishka[AbstractUow],
+        fetch_user_list: FromDishka[FetchUserList],
+        limit: Annotated[int, Parameter(gt=0, le=100)] = 10,
+        offset: Annotated[int, Parameter(gt=0)] = 0,
+    ) -> UserPagination:
+        async with uow(read_only=True):
+            return await fetch_user_list.execute(
+                input_dto=UserPaginationFilter(limit=limit, offset=offset),
+            )
