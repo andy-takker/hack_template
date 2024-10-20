@@ -1,0 +1,41 @@
+# Ignore common Python files
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+
+# Ignore virtual environment files
+venv/
+env/
+.venv/
+
+# Ignore IDE and editor files
+.vscode/
+.pycharm/
+.idea/
+*.iml
+
+# Ignore test and coverage files
+tests/
+test/
+coverage/
+*.cover
+
+# Ignore documentation files
+docs/
+doc/
+
+# Ignore Git and SVN files
+.git/
+.gitignore
+.svn/
+
+# Ignore Poetry and pip files
+requirements.txt
+*.egg-info/
+
+# Ignore logs and temporary files
+logs/
+tmp/
+*.log
+*.tmp
